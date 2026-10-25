@@ -1,7 +1,7 @@
 -- Run from LycheeUI: lua tests/layout_release.lua
 local S=dofile('tests/stubs.lua');S.Install()
 local private={}
-for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Elements','Native','Menu'}) do
+for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Responsive','Elements','Native','Menu'}) do
  assert(loadfile(file..'.lua'))('LayoutRelease',private)
 end
 local checks=0

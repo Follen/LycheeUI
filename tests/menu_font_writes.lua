@@ -1,6 +1,6 @@
 -- Run from LycheeUI: lua tests/menu_font_writes.lua
 local S=dofile('tests/stubs.lua');S.Install()
-local private={};for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('MenuFontWrites',private) end
+local private={};for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Responsive','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('MenuFontWrites',private) end
 local checks=0
 local function check(value,message) checks=checks+1;assert(value,message) end
 local function near(a,b) return math.abs(a-b)<.000001 end

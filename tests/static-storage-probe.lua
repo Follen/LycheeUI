@@ -1,7 +1,7 @@
 -- Isolated shared-runtime metadata costs. Run from LycheeUI: lua tests/static-storage-probe.lua
 -- Native substitute objects are counted separately. Diagnostic GC is not a runtime policy.
 local S=dofile('tests/stubs.lua');S.Install()
-local private={};for _,name in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Elements','Native','Menu'}) do assert(loadfile(name..'.lua'))('StorageProbe',private) end
+local private={};for _,name in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Responsive','Elements','Native','Menu'}) do assert(loadfile(name..'.lua'))('StorageProbe',private) end
 local UI=private.LycheeUI:CreateContext({reducedMotion=true});local C=UI.C
 local parent=CreateFrame('Frame',nil,UIParent);parent:SetSize(800,600)
 local function Phase(label,fn)

@@ -1,6 +1,6 @@
 -- Run from LycheeUI: lua tests/style_events.lua
 local S=dofile('tests/stubs.lua');S.Install()
-local private={};for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('StyleEvents',private) end
+local private={};for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Responsive','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('StyleEvents',private) end
 local ctx=private.LycheeUI:CreateContext({reducedMotion=true});local C=ctx.C
 local checks=0
 local function Check(value,message) checks=checks+1;assert(value,message) end

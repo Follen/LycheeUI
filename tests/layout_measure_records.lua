@@ -1,7 +1,7 @@
 -- Run from LycheeUI: lua tests/layout_measure_records.lua
 local S=dofile('tests/stubs.lua');S.Install()
 local private={}
-for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('LayoutMeasureRecords',private) end
+for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Responsive','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('LayoutMeasureRecords',private) end
 local checks=0
 local function check(value,message) checks=checks+1;assert(value,message) end
 local function count(values) local n=0;for _ in pairs(values) do n=n+1 end;return n end

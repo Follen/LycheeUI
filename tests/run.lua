@@ -13,7 +13,7 @@ local count=0
 local function check(value,message) count=count+1;assert(value,message) end
 local function near(a,b) return math.abs(a-b)<.00001 end
 check(#S.nodes==coldNodes,"loading embedded definitions creates no native objects")
-check(private.LycheeUI==library and library.version==46 and library.versionString=="1.3.0","the completed manifest exposes one versioned library")
+check(private.LycheeUI==library and library.version==10000 and library.versionString=="1.0.0","the completed manifest exposes V1.0.0")
 check(library.media=="Interface\\AddOns\\FirstHost\\Libs\\LycheeUI\\Media\\","the embedded default follows its installed host")
 local theme,factory=library.Theme,library.CreateComponents
 local second=Embed("SecondHost")
@@ -35,12 +35,12 @@ check(firstButton.SetVariant==secondButton.SetVariant and firstButton.SetExpande
 local task=function() return false end;M:Start("embedding",task);local driver=M.driver;local beforeEmbed=#S.nodes
 Embed("ThirdHost")
 check(a.C==C and a.Motion==M and M.driver==driver and M.jobs.embedding==task and #S.nodes==beforeEmbed,"another copy preserves the current context, task and driver")
-library.version=47;Embed("OlderHost")
-check(library.version==47 and library.CreateComponents==factory,"an older incoming revision leaves a newer library untouched")
+library.version=10001;Embed("OlderHost")
+check(library.version==10001 and library.CreateComponents==factory,"an older incoming version leaves a newer library untouched")
 library.Context.oldRevisionExtension=function() end
-library.version=16;Embed("UpgradeHost")
+library.version=47;Embed("UpgradeHost")
 check(library.Context.oldRevisionExtension==nil and a.oldRevisionExtension~=nil,"upgrades expose only current context methods while retaining existing context prototypes")
-check(_G.LycheeUI==library and library.version==46 and a.C==C and a.Motion==M and M.jobs.embedding==task,"an in-place revision upgrade preserves live context ownership")
+check(_G.LycheeUI==library and library.version==10000 and a.C==C and a.Motion==M and M.jobs.embedding==task,"V1.0.0 replaces pre-release copies while preserving live context ownership")
 check(a.Theme.media=="Interface\\AddOns\\FirstHost\\Libs\\LycheeUI\\Media\\" and library:CreateContext().Theme.media=="Interface\\AddOns\\UpgradeHost\\Libs\\LycheeUI\\Media\\","an upgrade keeps old context assets and uses the new provider for future defaults")
 check(#S.nodes==beforeEmbed,"upgrading definitions allocates no native objects")
 M:Stop("embedding")

@@ -1,5 +1,5 @@
 local S=dofile('tests/stubs.lua');S.Install()
-local p={};for _,f in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Elements','Native','Menu'}) do assert(loadfile(f..'.lua'))('Audit',p) end
+local p={};for _,f in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Responsive','Elements','Native','Menu'}) do assert(loadfile(f..'.lua'))('Audit',p) end
 local c=LycheeUI:CreateContext({reducedMotion=true});local C=c.C
 collectgarbage('collect');local before=collectgarbage('count')
 local buttons={};for i=1,100 do buttons[i]=C.Button(UIParent,'Button',100) end

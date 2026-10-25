@@ -1,5 +1,5 @@
 local S=dofile("tests/stubs.lua");S.Install()
-local p={};for _,file in ipairs({"Core","Theme","Motion","Styles","Components","Layouts","Elements","Native","Menu"}) do assert(loadfile(file..".lua"))("Smoke",p) end
+local p={};for _,file in ipairs({"Core","Theme","Motion","Styles","Components","Layouts","Responsive","Elements","Native","Menu"}) do assert(loadfile(file..".lua"))("Smoke",p) end
 local ctx=LycheeUI:CreateContext({reducedMotion=true});local C=ctx.C
 local parent=CreateFrame("Frame",nil,UIParent);parent:SetSize(500,400)
 local text=C.Text(parent,"label","label");local button=C.Button(parent,"button",100);button:Fire("OnEnter");button:Fire("OnLeave")

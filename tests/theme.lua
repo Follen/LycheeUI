@@ -27,6 +27,38 @@ return function(S,library,check,near)
  check(ok and err==nil and resolved.primary[4]==1 and resolved.font14==17,"successful validation returns its existing resolved aliases as the third result")
  local resolver=library.ResolveTheme;local resolutions={}
  library.ResolveTheme=function(...) local result=resolver(...);resolutions[#resolutions+1]=result;return result end
+ local plainContext=library:CreateContext()
+ library.ResolveTheme=resolver
+ check(#resolutions==1 and plainContext.Theme==resolutions[1],"absent extra defaults resolve and validate the builtin theme only once")
+ resolutions={};library.ResolveTheme=function(...) local result=resolver(...);resolutions[#resolutions+1]=result;return result end
+ local emptyContext=library:CreateContext({themeDefaults={},theme={labelFontSize=17}})
+ library.ResolveTheme=resolver
+ check(#resolutions==1 and emptyContext.Theme==resolutions[1] and emptyContext.Theme.font14==17,"empty extra defaults do not duplicate resolution or skip override aliases")
+ check(plainContext.Theme~=emptyContext.Theme and plainContext.Theme.font14~=emptyContext.Theme.font14,"empty-default optimization preserves isolated resolved context themes")
+ check(not pcall(library.CreateContext,library,{themeDefaults="invalid"}) and not pcall(library.CreateContext,library,{themeDefaults={font14=0},theme={font14=18}}),"invalid defaults remain rejected before valid overrides can mask them")
+ local defaultsOnly={productWidth=420,labelFontSize=17,surface={.2,.3,.4},brand={.3,.4,.5}}
+ local _,_,expectedDefaults=library:ValidateTheme({},defaultsOnly)
+ resolutions={};library.ResolveTheme=function(...) local result=resolver(...);resolutions[#resolutions+1]=result;return result end
+ local defaultsContext=library:CreateContext({themeDefaults=defaultsOnly,theme={}})
+ library.ResolveTheme=resolver
+ check(#resolutions==1 and defaultsContext.Theme==resolutions[1],"an empty override reuses this call's successfully validated defaults without a second resolved copy")
+ for key,expected in pairs(expectedDefaults) do
+  local actual=defaultsContext.Theme[key]
+  if type(expected)=="table" then for index,value in ipairs(expected) do check(actual[index]==value,"default color derivation remains equivalent: "..key) end
+  else check(actual==expected,"default aliases and tokens remain equivalent: "..key) end
+ end
+ local defaultsOther=library:CreateContext({themeDefaults=defaultsOnly})
+ defaultsContext.Theme.productWidth=999
+ check(defaultsOther.Theme~=defaultsContext.Theme and defaultsOther.Theme.productWidth==420,"reused defaults stay isolated between context instances")
+ local defaultReads=0
+ local dynamicDefaults=setmetatable({probeToken=1},{__index=function(_,key) if key=="labelFontSize" then defaultReads=defaultReads+1;return defaultReads==1 and 17 or 18 end end})
+ local dynamicContext=library:CreateContext({themeDefaults=dynamicDefaults})
+ check(defaultReads==2 and dynamicContext.Theme.font14==18,"default metatables preserve both original lookup passes")
+ local dynamicOverride=setmetatable({},{__index=function(_,key) if key=="labelFontSize" then return 21 end end})
+ local overrideContext=library:CreateContext({themeDefaults=defaultsOnly,theme=dynamicOverride})
+ check(overrideContext.Theme.font14==21,"an empty override with a metatable still resolves its own values")
+ resolutions={}
+ library.ResolveTheme=function(...) local result=resolver(...);resolutions[#resolutions+1]=result;return result end
  local reused=library:CreateContext({themeDefaults={productWidth=420},theme={productWidth=460,labelFontSize=17}})
  library.ResolveTheme=resolver
  check(#resolutions==2 and reused.Theme==resolutions[2] and reused.Theme.productWidth==460 and reused.Theme.font14==17,"raw Context validates both layers and reuses the resolved override result without a third Resolve")

@@ -1,6 +1,6 @@
 -- Run from LycheeUI: lua tests/style_release.lua
 local S=dofile('tests/stubs.lua');S.Install()
-local private={};for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('StyleRelease',private) end
+local private={};for _,file in ipairs({'Core','Theme','Motion','Styles','Components','Layouts','Responsive','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('StyleRelease',private) end
 local Library=private.LycheeUI;local checks=0
 local function check(value,message) checks=checks+1;assert(value,message) end
 -- Native HookScript registrations survive SetScript, unlike the general stub's
@@ -148,9 +148,9 @@ local oldEmpty=oldStyle.states;oldStyle:Bind(upgrading,{hover=true});oldStyle:Re
 local upgradeHooks=upgrading.hookCount
 local coreFile=assert(io.open('Core.lua'));local coreSource=coreFile:read('*a');coreFile:close()
 local nextRevision=Library.version+1
-coreSource=coreSource:gsub('local REVISION=%d+','local REVISION='..nextRevision,1)
+coreSource=coreSource:gsub('local VERSION=%d+','local VERSION='..nextRevision,1)
 local upgradedPrivate={};assert(loadstring(coreSource,'@SimulatedUpgradeCore'))('StyleReleaseUpgrade',upgradedPrivate)
-for _,file in ipairs({'Theme','Motion','Styles','Components','Layouts','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('StyleReleaseUpgrade',upgradedPrivate) end
+for _,file in ipairs({'Theme','Motion','Styles','Components','Layouts','Responsive','Elements','Native','Menu'}) do assert(loadfile(file..'.lua'))('StyleReleaseUpgrade',upgradedPrivate) end
 local upgraded=upgradedPrivate.LycheeUI:CreateContext({reducedMotion=true})
 local upgradedStyle=upgraded.C.Style(upgrading,{states={hover={root={alpha=.7}}}})
 local upgradedEmpty=upgradedStyle.states
