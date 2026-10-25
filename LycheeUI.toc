@@ -1,0 +1,9 @@
+## Interface: 120105
+## Title: |cffE87983Lychee|r UI
+## Title-zhCN: |cffE87983荔枝|r界面
+## Notes: Shared native controls and motion for Lychee addons.
+## Notes-zhCN: 荔枝插件共用的原生控件、主题与动效。
+## Author: Lychee
+## Version: 1.3.0
+## LoadOnDemand: 1
+embeds.xml

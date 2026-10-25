@@ -1,0 +1,132 @@
+return function(S,library,check,near)
+ local ctx=library:CreateContext()
+ local M=ctx.Motion
+ local parent=CreateFrame("Frame",nil,UIParent);parent:SetScale(.75)
+ local region=CreateFrame("Frame",nil,parent)
+ local point,size,alpha=region.SetPoint,region.SetSize,region.SetAlpha
+ local points,sizes,alphas=0,0,0
+ region.SetPoint=function(self,...) points=points+1;point(self,...) end
+ region.SetSize=function(self,...) sizes=sizes+1;size(self,...) end
+ region.SetAlpha=function(self,...) alphas=alphas+1;alpha(self,...) end
+ local function pixel(value) return math.floor(value*.75+.5)/.75 end
+ local function rectIs(x,y,w,h)
+  local anchor,owner,relative,rx,ry=region:GetPoint()
+  return anchor=="TOPLEFT" and owner==parent and relative=="TOPLEFT" and rx==pixel(x) and ry==pixel(y) and region:GetWidth()==pixel(w) and region:GetHeight()==pixel(h)
+ end
+ M:Rect(region,3,-7,101,35,.18)
+ check(rectIs(3,-7,101,35) and M:Count()==0,"first Rect snaps its own passive region to a parent-relative pixel-aligned endpoint")
+ local state=M.rects[region];local step=state.step
+ local beforePoints,beforeSizes=points,sizes
+ M:Rect(region,3,-7,101,35,.18)
+ check(points==beforePoints and sizes==beforeSizes and M:Count()==0,"an unchanged Rect endpoint writes no geometry and starts no driver")
+ M:Rect(region,103,-47,151,55,.18);M:Tick(.04)
+ local x,y,w,h=state.x,state.y,state.width,state.height
+ local id,elapsed=M.jobIds[state],state.elapsed
+ M:Rect(region,103,-47,151,55,.18)
+ check(M.jobIds[state]==id and state.elapsed==elapsed,"repeating a running Rect target preserves its progress")
+ M:Rect(region,3,-7,101,35,.18)
+ check(state.x==x and state.y==y and state.width==w and state.height==h and state.fromX==x and state.fromWidth==w,"Rect reversal begins from the currently applied pixel geometry without a jump")
+ M:Tick(.02)
+ check(state.x<x and state.width<w and M.rects[region]==state and state.step==step,"reversed Rect moves toward its new target with the same state and step closure")
+ beforePoints,beforeSizes=points,sizes
+ M:Tick(.000001)
+ check(points==beforePoints and sizes==beforeSizes,"Rect does not rewrite unchanged physical pixels on a short frame")
+ M:FinishRect(region)
+ check(rectIs(3,-7,101,35) and M:Count()==0,"FinishRect applies the latest target and stops its geometry job")
+
+ M:Rect(region,103,-47,151,55,.18);M:Alpha(region,.2,.04)
+ check(M:Count()==2,"Rect geometry and Alpha opacity share the finite driver as independent jobs")
+ M:Tick(.04)
+ check(M.jobs[state]==step and M.jobs[region]==nil and near(region:GetAlpha(),.2),"finishing Alpha preserves a longer Rect transition")
+ M:Alpha(region,1,.18);M:FinishRect(region)
+ check(M.jobs[region]~=nil and rectIs(103,-47,151,55),"FinishRect leaves its region's opacity transition running")
+ M:Rect(region,3,-7,101,35,.18);M:Tick(.02)
+ M:Stop(region);x=state.x;M:Tick(.2)
+ check(M:Count()==0 and state.x==x,"Stop(region) cancels both geometry and opacity without writing their old endpoints")
+ M:Rect(region,3,-7,101,35,.18)
+ check(M.jobs[state]==step,"a cancelled Rect resumes toward the same unfinished target when requested again")
+ M:StopAll()
+ check(rectIs(3,-7,101,35) and not M.running and not M.driver:GetScript("OnUpdate"),"StopAll lands active Rect geometry and removes the idle driver")
+ M:Rect(region,103,-47,151,55,0)
+ check(rectIs(103,-47,151,55) and M:Count()==0,"zero-duration Rect applies its endpoint without scheduling work")
+
+ local other=CreateFrame("Frame",nil,UIParent);other:SetScale(.75)
+ region:SetParent(other)
+ M:Rect(region,23,-17,111,35,0)
+ check(select(2,region:GetPoint())==other,"Rect follows the region's current parent after a pooled control is reparented")
+ region:ClearAllPoints();region:SetPoint("TOPLEFT",other,"TOPLEFT",100,-100);region:SetSize(150,40)
+ M:Rect(region,23,-17,111,35,0)
+ check(select(4,region:GetPoint())==pixel(23) and region:GetWidth()==pixel(111) and region:GetHeight()==pixel(35),"zero-duration Rect restores its endpoint after caller layout changes even when the target is unchanged")
+ region:SetPoint("TOPLEFT",other,"TOPLEFT",100,-100);region:SetSize(150,40)
+ M:Rect(region,23,-17,111,35,.18)
+ check(state.fromX==pixel(100) and state.fromWidth==pixel(150),"Rect retargets from caller-updated geometry rather than its old write cache")
+ M:Tick(.2);region:SetParent(parent);M:Rect(region,103,-47,151,55,0)
+
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",10,-20,8,-8)
+ local reveal=M.reveals[region];local revealStep=reveal.step
+ M:Tick(.04);x,y=select(4,region:GetPoint()),select(5,region:GetPoint())
+ local opacity=region:GetAlpha();id=M.jobIds[region];elapsed=reveal.elapsed
+ beforePoints,alphas=points,0
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",10,-20,8,-8)
+ check(M.jobIds[region]==id and reveal.elapsed==elapsed and points==beforePoints and alphas==0,"repeated Reveal endpoints keep progress and avoid redundant geometry or opacity writes")
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",-30,-50,-8,8)
+ check(select(4,region:GetPoint())==x and select(5,region:GetPoint())==y and region:GetAlpha()==opacity,"a running Reveal retargets from its visible position and alpha")
+ check(M.reveals[region]==reveal and reveal.step==revealStep,"Reveal reuses one placement state and step closure for the region")
+ M:Tick(.000001)
+ check(points==beforePoints and alphas==1,"Reveal changes opacity while skipping an unchanged physical position")
+ M:FinishPlacement(region)
+ check(select(4,region:GetPoint())==pixel(-30) and select(5,region:GetPoint())==pixel(-50) and region:GetAlpha()==1 and not next(M.placements),"FinishPlacement lands a retargeted Reveal at its pixel-aligned endpoint")
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",30,-40,8,-8)
+ M:Tick(.02);M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",90,-70,0,0,0)
+ M:Tick(.2)
+ check(select(4,region:GetPoint())==pixel(90) and select(5,region:GetPoint())==pixel(-70) and M:Count()==0,"an explicit zero-duration Reveal replaces its old destination without a later stale write")
+
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",10,-20,8,-8,.18);M:Tick(.04)
+ region:SetPoint("TOPLEFT",parent,"TOPLEFT",100,-70)
+ opacity=region:GetAlpha()
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",30,-40,8,-8,.18)
+ check(reveal.fromX==pixel(100) and reveal.fromY==pixel(-70) and reveal.fromAlpha==opacity,"Reveal retargets from caller-updated position and current alpha on the same anchor")
+ M:Tick(.01)
+ local p=(.01/.18)*(2-.01/.18)
+ check(select(4,region:GetPoint())==pixel(pixel(100)+(30-pixel(100))*p) and select(5,region:GetPoint())==pixel(pixel(-70)+(-40-pixel(-70))*p),"the first retargeted Reveal tick continues from the external layout without a stale-position jump")
+ region:SetPoint("TOPLEFT",parent,"TOPLEFT",80,-60)
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",30,-40,8,-8,.18)
+ check(reveal.fromX==pixel(80) and reveal.fromY==pixel(-60) and reveal.elapsed==0,"an unchanged Reveal endpoint reconciles an external position instead of retaining an obsolete transition")
+ M:FinishPlacement(region)
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",10,-20,8,-8,.18);M:Tick(.175)
+ region:SetPoint("TOPLEFT",parent,"TOPLEFT",100,-70)
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",10,-20,0,0,0)
+ check(select(4,region:GetPoint())==pixel(10) and select(5,region:GetPoint())==pixel(-20) and M:Count()==0,"zero-duration Reveal reapplies an already cached endpoint after external layout")
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",30,-40,8,-8,.18);M:Tick(.04)
+ region:SetPoint("BOTTOMLEFT",parent,"BOTTOMLEFT",50,20)
+ M:Reveal(region,"TOPLEFT",parent,"TOPLEFT",30,-40,0,0,0)
+ check(region:GetNumPoints()==1 and select(1,region:GetPoint())=="TOPLEFT" and select(4,region:GetPoint())==pixel(30),"Reveal restores its requested anchor basis after external anchors are added")
+
+ local selection=CreateFrame("Frame",nil,parent);selection:Hide()
+ M:Selection(selection,true)
+ check(selection:IsShown() and selection:GetAlpha()==0,"a hidden selection starts its default fade at zero")
+ M:Tick(.03);opacity=selection:GetAlpha()
+ M:Selection(selection,false)
+ check(selection:GetAlpha()==opacity,"deselecting preserves the visible alpha during a fast reversal")
+ M:Tick(.02);opacity=selection:GetAlpha()
+ M:Selection(selection,true)
+ check(selection:GetAlpha()==opacity,"reselecting continues from the fading alpha rather than restarting from zero")
+ local selectedState=M.selections[selection];id=M.jobIds[selection];elapsed=selectedState.elapsed
+ M:Selection(selection,true)
+ check(M.jobIds[selection]==id and selectedState.elapsed==elapsed,"duplicate selected states do not replay their transition")
+ M:Tick(.1)
+ check(selection:GetAlpha()==1 and selection:IsShown() and M:Count()==0,"default selection settles after its finite 100ms fade")
+ M:Selection(selection,false,.2);M:Tick(.1)
+ check(selection:IsShown() and selection:GetAlpha()>0,"Selection accepts a longer optional duration")
+ M:StopAll()
+ check(selection:GetAlpha()==0 and not selection:IsShown() and M:Count()==0,"StopAll lands and hides a deselected region without leaving a residual fill")
+ M:Selection(selection,true,0)
+ check(selection:IsShown() and selection:GetAlpha()==1 and M:Count()==0,"zero-duration selection applies its visible endpoint immediately")
+
+ ctx.options.reducedMotion=true
+ M:Rect(region,12,-16,80,24,.18)
+ M:Reveal(selection,"TOPLEFT",parent,"TOPLEFT",10,-20,8,-8,.18)
+ M:Selection(selection,false,.1)
+ check(rectIs(12,-16,80,24) and select(4,selection:GetPoint())==pixel(10) and select(5,selection:GetPoint())==pixel(-20),"reduced motion applies Rect and Reveal geometry immediately")
+ check(selection:GetAlpha()==0 and not selection:IsShown() and M:Count()==0,"reduced motion settles Selection without any finite animation job")
+end

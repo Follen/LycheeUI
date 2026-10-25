@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "library": "LycheeUI",
+  "status": "frozen",
+  "version": "1.3.0",
+  "revision": 46,
+  "note": "2026-10-25：在 r45 布局释放修复基础上，Row/Column 的 Measure 清除过期且无摆放所有权的记录；仅保留当前条目与仍需归还的旧摆放记录。预建 Frame 池下反复测量保持有界，锚点与后续 Layout/Release 验证通过。兼容修订为 r46，文本使用 LF。",
+  "runtimeFiles": [
+    {
+      "path": "Components.lua",
+      "sha256": "0c6bfe33536c57eaf39857fd9d10fcb924760cb6b9f317e20d39f08906c31562"
+    },
+    {
+      "path": "Core.lua",
+      "sha256": "c6b4caeb07ee0644d8a1d2b92a5c9c754093846cc683927d9e88393a8b37c50f"
+    },
+    {
+      "path": "Elements.lua",
+      "sha256": "40576915ce51f9f84556cd57a056b0b7ec50bef1bb8af469a86d6190bc6bfe93"
+    },
+    {
+      "path": "embeds.xml",
+      "sha256": "074fd1bf12907f3d4dc64b15216d5ce9caa7171f4ab474223ba8c21e4157c603"
+    },
+    {
+      "path": "Layouts.lua",
+      "sha256": "894b7cdbae78d958864c53620484346ddf33d3c0c99aebba73d23e10b8fa7b28"
+    },
+    {
+      "path": "Media/arrow.tga",
+      "sha256": "93786301129ed889270d2a02f5643d4416e82697785f143fa10bb7ae54998727"
+    },
+    {
+      "path": "Media/bell.tga",
+      "sha256": "d64179d1877cb926fff238a148f060f00184f2d40e140693391223211e62c8cc"
+    },
+    {
+      "path": "Media/book.tga",
+      "sha256": "ac017a1a6244bb94fb175efdb64d4c56b58c72e71a47fbc96305f618ec56c385"
+    },
+    {
+      "path": "Media/caution.tga",
+      "sha256": "6bdad242ba25891acd890ae9b4ce1e87002ec295d835bd76ec0972834820d953"
+    },
+    {
+      "path": "Media/chevron.tga",
+      "sha256": "d88346a13d505bc3aac4f58e292952f98490b5f0c03348a192e95c6fbda89780"
+    },
+    {
+      "path": "Media/circle.tga",
+      "sha256": "ee3d0ece0a31e76edc81cda3ea666c637bcf28724466222948e2ab235216b293"
+    },
+    {
+      "path": "Media/close.tga",
+      "sha256": "756dd35d3c7c393d6acc4c6109439f02ff0ba342dd82b1451d93ae3bc7a1424e"
+    },
+    {
+      "path": "Media/decline.tga",
+      "sha256": "a2b846a146af2ad86c904dad55446c7da3a01c38bf2f7217faaa18af3d00c06d"
+    },
+    {
+      "path": "Media/heart.tga",
+      "sha256": "d6be15a5e4bd895a85da6cea324d6ff8aa0a5134bbdfc645979cebe796302873"
+    },
+    {
+      "path": "Media/history.tga",
+      "sha256": "60ee8e76f8acede358987f77a5bb96d60879e21cb19b4a56ba90f8e4256900c8"
+    },
+    {
+      "path": "Media/icon-mask.tga",
+      "sha256": "3842cf0e05c57441da86894559b30b17bf97055b301cd076003b119da5f8a5b5"
+    },
+    {
+      "path": "Media/plus.tga",
+      "sha256": "07311c36e089b733d8e4dbb5ae5a2b68cc3e746e9a047be4a434e8dafa5e9fb6"
+    },
+    {
+      "path": "Media/refresh.tga",
+      "sha256": "1d4ea9510b9ee540a485dbf37b379ec6b7467707a409809ed5d012c922fec71e"
+    },
+    {
+      "path": "Media/rounded-corner.tga",
+      "sha256": "6c5203e7c6caede452ff5a34e6a356f2e7caef376cd3d1a4ac40353e340b9e5a"
+    },
+    {
+      "path": "Media/search.tga",
+      "sha256": "fc6308be9daccbc766db4942a9ddde797d57902a128c229e69f389f342d6fba7"
+    },
+    {
+      "path": "Media/settings.tga",
+      "sha256": "f326928897d118c63e16d2b3a0e15894b3064319063ae3e449125ce646b77c30"
+    },
+    {
+      "path": "Media/shadow-12.tga",
+      "sha256": "4b114a802ec77994eb266a970de8e7d1dece24883ae9cb0bfb926ae337615978"
+    },
+    {
+      "path": "Media/shadow-16.tga",
+      "sha256": "64d76fdbf085b2f28381cfdc4a2e6390b71c07c9bd6f1d911f3ab56180edc926"
+    },
+    {
+      "path": "Media/shadow-24.tga",
+      "sha256": "a7d36e795f94ce43e658898ecbcc6415fa72301104581590e318aa6e59107276"
+    },
+    {
+      "path": "Media/shadow-28.tga",
+      "sha256": "356c7b119618c92d25d747992cc1aa7cb1c9187ff18166393db36a967b296e34"
+    },
+    {
+      "path": "Menu.lua",
+      "sha256": "4ec13c762ff8be5183ddbd6d68da572d8d55f1bb63ee2221301ddba2a56857e0"
+    },
+    {
+      "path": "Motion.lua",
+      "sha256": "af4360c01eca76351eb7c5f9ca031321be8cf63143829ef5364eac1cc4c56e21"
+    },
+    {
+      "path": "Native.lua",
+      "sha256": "1e684f5cb17201ca09ea2a747b61aede450258c0bcebe88ca5dcb97f68d0d417"
+    },
+    {
+      "path": "Styles.lua",
+      "sha256": "99fdecda1f3ec7f3596c3040b0a84f9deea06577be13128d1f892427fb28d59f"
+    },
+    {
+      "path": "Theme.lua",
+      "sha256": "ef3da514cd40133823f37e2d9d9d2fef84603ee7f2e0122bc22c3e0969e9d0ab"
+    }
+  ],
+  "frozenOn": "2026-10-25",
+  "maintenance": {
+    "scope": "冻结 runtimeFiles 列出的运行源码、加载清单与通用素材；公开 API 和组件行为以当前 1.3.0／r46 合同为准。",
+    "consumerBoundary": "产品页面、业务数据、品牌图形与轨迹、产品默认样式由消费方维护；消费方开发不得顺带修改或升级共享库。",
+    "changeConditions": "用户明确要求修改 LycheeUI，或明确要求解决必须修改该库的问题时，在该授权范围内维护；已有授权无需逐次确认。",
+    "sourceOfTruth": "先修改独立源库，再通过消费方同步脚本更新内置副本；不得直接修补内置副本或反向覆盖源库。",
+    "validation": "运行文件变化后执行受影响的通用合同验证，核对消费方接入；验证完成后再更新兼容修订、实际文件清单与 SHA-256，并重新冻结。只修改文档或冻结说明不提升兼容修订。",
+    "integrity": "同步前核对冻结清单和哈希；存在差异时定位来源，不通过重写哈希掩盖未经确认的源码变化。运行文本保持 LF。"
+  }
+}

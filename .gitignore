@@ -1,0 +1,6 @@
+/.lycheedev/
+/dist/
+/.worktrees/
+.DS_Store
+Thumbs.db
+Desktop.ini
