@@ -1,6 +1,6 @@
 # LycheeUI API
 
-This document describes the public runtime API in LycheeUI V1.0.0. The release is frozen by the `v1.0.0` Git tag and the runtime hashes in [.lock](.lock). Embed and load the library as described in [README.md](README.md). Theme tokens and visual rules are defined in [DESIGN.md](DESIGN.md).
+This document describes the LycheeUI V1.0.1 development candidate. V1.0.0 remains the latest published release (`v1.0.0`); the candidate runtime hashes are recorded in [.lock](.lock), and no V1.0.1 release tag has been published. Embed and load the library as described in [README.md](README.md). Theme tokens and visual rules are defined in [DESIGN.md](DESIGN.md).
 
 ## Call and ownership conventions
 
@@ -69,7 +69,7 @@ Each context gets its own top-level theme table. Default color arrays are shared
 | `ctx:RoundIcon(icon, texture?)` | Adds one shared rounded mask. An explicit mask texture replaces its art and remains bound for the context lifetime; repeated calls reuse the existing mask. |
 | `ctx:SetGameTexture(texture, file, left, right, top, bottom)` | Sets a file texture, applies the rounded mask and 6% crop within the supplied UV bounds (defaults to the full texture). |
 | `ctx:SetGameAtlas(texture, atlas)` | Sets an atlas and crops within its actual atlas UV bounds. |
-| `ctx:SetIconState(textureOrGlyph, selected, hovered)` | Applies shared selected/hovered grayscale, tint, and alpha treatment. Reads the current native state to skip unchanged writes, comparing color/alpha at eight-bit storage precision while tolerating float readback roundoff. External native style changes, including adjacent stored channel values, are corrected on the next call. |
+| `ctx:SetIconState(textureOrGlyph, selected, hovered)` | Applies shared selected/hovered grayscale, tint, and alpha treatment. Effective declarative `color`, `alpha`, and `desaturated` properties retain ownership independently; unowned properties keep normal feedback. Reads the current native state to skip unchanged writes, comparing color/alpha at eight-bit storage precision while tolerating float readback roundoff. External native style changes to unowned properties, including adjacent stored channel values, are corrected on the next call. |
 | `ctx:OpenMenu(anchor, entries, onPick, options)` | Opens this context’s menu; see [Menus](#menus). |
 | `ctx:CloseMenu()` / `ctx:CloseMenuFor(anchor)` | Closes the current menu, optionally only when owned by `anchor`. |
 | `ctx:GetMenu()` | Returns the created menu Frame or nil if the menu has not yet been created. |
@@ -79,7 +79,9 @@ Each context gets its own top-level theme table. Default color arrays are shared
 
 The menu inspection methods expose the menu Frame as a public extension point. Use them for deliberate extensions such as applying the application font to its title rows; do not assume a menu exists before `GetMenu()` returns one.
 
-`LycheeUI.ResolveTheme(overrides)` returns an independent theme table with aliases and derived interaction tokens recomputed from overridden base colors. `LycheeUI.Theme` is the library default theme. `LycheeUI.media` exposes the installed media path; `LycheeUI.versionString` is the public semantic version (`"1.0.0"`). The numeric `LycheeUI.version` is an internal embedded-copy ordering key, not a second release version; V1.0.0 uses `10000` so it supersedes pre-release copies. Same or older copies reuse the completed library. Newer copies preserve existing Context objects while updating the factories used by new Contexts.
+Normal component feedback reads ownership from each bound slot's actual target, including independent declarations on a child such as a Button label and style records owned by other Contexts. Shared icon feedback, including `Glyph:SetSelected` and normal Button/List refreshes, also recognizes a public Glyph Frame, its internal Texture, and any host slot naming that target (`icon`, `glyph`, or another declared slot). A color declaration leaves undeclared alpha and grayscale feedback active. A property declared only in an interaction state uses normal feedback outside that state. Feedback calls retain the latest default value as the fallback for state exit, release, and rebinding; an unchanged effective style value remains protected from later widget actions. Frame alpha and internal Texture alpha retain their existing native layers.
+
+`LycheeUI.ResolveTheme(overrides)` returns an independent theme table with aliases and derived interaction tokens recomputed from overridden base colors. `LycheeUI.Theme` is the library default theme. `LycheeUI.media` exposes the installed media path; `LycheeUI.versionString` is the public semantic version (`"1.0.1"`). The numeric `LycheeUI.version` is an internal embedded-copy ordering key, not a second release version; The V1.0.1 candidate uses `10001`, superseding V1.0.0 (`10000`). Same or older copies reuse the completed library. Newer copies preserve existing Context objects while updating the factories used by new Contexts.
 
 ## Components
 
@@ -240,7 +242,7 @@ Window motion uses a private task key, so caller-owned keys cannot replace or pr
 | `M:Busy(region, enabled)` | Shows and pulses a region while enabled; `enabled=false` hides it and restores the alpha captured when enabled. The pulse has a 0.9s period. `M:Stop(region)` restores alpha without changing visibility. |
 | `M:Waiting(region, enabled)` | Shows a waiting region with a 1.2s size/alpha/position wave. `enabled=false` hides it and restores the size, alpha, and anchor captured on enable. `M:Stop(region)` restores geometry/alpha without changing visibility. |
 | `M:Alpha(region, target, duration, initial, finished)` | Animates alpha; optional initial alpha is applied at start; zero-argument `finished()` runs at completion. Zero duration applies the target and invokes the callback immediately. |
-| `M:Color(panel, target, duration)` | Animates a Panel color while preserving its independent alpha. |
+| `M:Color(object, target, duration)` | Animates a `SetColor` object from its current `.color` material or native Texture/`._lycheeTexture` vertex color. Panel animation preserves its independent alpha. Retargeting starts at the current displayed color. If no starting color can be read, applies the target immediately without scheduling a transition. |
 | `M:Selection(region, selected, duration)` | Animates selection opacity without restarting an unchanged target; reversal keeps the current opacity. Duration defaults to 0.10s; zero applies the state immediately. |
 | `M:CapturePosition()` | Captures the configured window’s current anchor and origin coordinates for Presence motion; it does not set a motion endpoint. |
 | `M:SetPresence(value)` | Applies a Presence phase from 0 to 1 as window position and alpha only. The caller controls whether the frame is shown or hidden. |
