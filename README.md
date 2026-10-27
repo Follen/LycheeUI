@@ -2,7 +2,7 @@
 
 LycheeUI 是可嵌入魔兽世界插件的原生 UI 库，提供主题、控件、布局、菜单、动效和原生控件借用接口。组件使用 WoW 的 Frame、Button、Texture、FontString 和 EditBox；插件负责业务数据、页面组合、偏好存储与窗口入口。
 
-当前发布为 **V1.0.0**，目标客户端为 **Retail 12.1.5（Interface 120105）**。源码仓库：[Follen/LycheeUI](https://github.com/Follen/LycheeUI)。固定版本入口为 [`v1.0.0`](https://github.com/Follen/LycheeUI/tree/v1.0.0)，运行文件与素材的冻结清单见 [.lock](.lock)。
+当前发布为 **V1.0.0**，目标客户端为 **Retail 12.1.5（Interface 120105）**。源码仓库：[Follen/LycheeUI](https://github.com/Follen/LycheeUI)。固定版本入口为 [`v1.0.0`](https://github.com/Follen/LycheeUI/tree/v1.0.0)，当前工作树是 **V1.0.1 开发候选**，尚未发布新标签；候选运行文件与素材的校验清单见 [.lock](.lock)。
 
 ## 现有能力
 
@@ -141,7 +141,7 @@ Theme、recipe、元素和命名类属于启动声明，构建后保持不变；
 
 ## 版本与冻结
 
-- 对外发布版本为 **V1.0.0**，`LycheeUI.versionString` 为 `"1.0.0"`，对应 Git 标签为 `v1.0.0`。
+- 最新对外发布版本为 **V1.0.0**，对应 Git 标签为 `v1.0.0`。当前开发候选的 `LycheeUI.versionString` 为 `"1.0.1"`，嵌入排序版本为 `10001`；没有发布 `v1.0.1` 标签。
 - [.lock](.lock) 记录冻结状态、运行文件、素材和 SHA-256。嵌入时保持同一标签的文件完整，升级时整体替换；修改或同步库前先阅读冻结约定。
 - 运行文本采用 LF，Git 属性见 [.gitattributes](.gitattributes)。替换内置文件后执行 `/reload`，让 Context 和控件按新定义重新建立。
 
@@ -150,7 +150,7 @@ Theme、recipe、元素和命名类属于启动声明，构建后保持不变；
 - [API.md](API.md)：公开方法、参数、声明式样式、布局、列表、原生租约与生命周期合同。
 - [DESIGN.md](DESIGN.md)：颜色、文字角色、组件外观和交互规范。
 - [CHANGELOG.md](CHANGELOG.md)：发布变更与维护记录。
-- [.lock](.lock)：当前发布的冻结范围及运行文件校验清单。
+- [.lock](.lock)：当前候选的冻结范围及运行文件校验清单。
 
 ## 核心验证
 
@@ -158,6 +158,7 @@ Theme、recipe、元素和命名类属于启动声明，构建后保持不变；
 
 ```sh
 lua tests/run.lua
+lua tests/icon_style_ownership.lua
 lua tests/flex_layouts.lua
 lua tests/flex_recursive_prepare.lua
 lua tests/responsive.lua
