@@ -74,5 +74,17 @@ do
  M:StopAll()
 end
 
+for _,immediate in ipairs({'reduced','no_duration'}) do
+ local owner=Library:CreateContext({reducedMotion=immediate=='reduced'})
+ local glyph=owner.C.Glyph(UIParent,'book',20)
+ local reads=0;local native=glyph.texture.GetVertexColor
+ glyph.texture.GetVertexColor=function(self) reads=reads+1;return native(self) end
+ owner.Motion:Color(glyph,blue,immediate=='reduced' and .1 or nil)
+ check(reads==0,immediate..' immediate color does not read an unused native interpolation start')
+ check(owner.Motion:Count()==0,immediate..' immediate color starts no task')
+ rgb(glyph,blue,immediate..' immediate color retains the requested endpoint')
+ owner:Hide()
+end
+
 ctx:Hide();meta.__index=original
 print('motion color: '..checks..' checks passed')

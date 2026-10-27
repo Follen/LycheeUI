@@ -654,6 +654,7 @@ end
 
 dofile("tests/native.lua")(library,S,check)
 dofile("tests/native_background.lua")(library,S,check)
+dofile("tests/native_border_rounding.lua")(library,S,check)
 dofile("tests/context.lua")(S,library,check,near)
 
 dofile("tests/motion.lua")(S,library,check,near)
